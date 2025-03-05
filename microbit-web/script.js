@@ -1,4 +1,4 @@
-@ -0,0 +1,22 @@
+
 import Microbit from "https://cdn.jsdelivr.net/npm/microbit-web-bluetooth";
 
 const button = document.getElementById("connect");
