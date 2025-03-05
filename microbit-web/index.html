@@ -1,1 +1,29 @@
 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Micro:bit Web Bluetooth- Genes Seneg</title>
+</head>
+<body>
+    <h1>Connect to Micro:bit</h1>
+    <button id="connect">Connect</button>
+    <script type="module">
+        import Microbit from "./node_modules/microbit-web-bluetooth/index.js";
+
+        const button = document.getElementById("connect");
+        let microbit;
+
+        button.addEventListener("click", async () => {
+            try {
+                microbit = new Microbit();
+                await microbit.connect();
+                alert("Micro:bit connected!");
+            } catch (error) {
+                console.error("Connection failed", error);
+            }
+        });
+    </script>
+</body>
+</html>
