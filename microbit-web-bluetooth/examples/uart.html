@@ -11,8 +11,8 @@
         <script>
             const logEl = document.getElementById("log");
             const log = (message) => logEl.innerHTML = `${message}\n${logEl.innerHTML}`;
-            const logJson = (message) => log(JSON.stringify(message, null, 2));
-            const eventHandler = event => log(`${event.type}: ${JSON.stringify(event.detail, null, 2)}`);
+            // const logJson = (message) => log(JSON.stringify(message, null, 2));
+            // const eventHandler = event => log(`${event.type}: ${JSON.stringify(event.detail, null, 2)}`);
 
             document.getElementById("connect").onclick = async () => {
                 const device = await microbit.requestMicrobit(window.navigator.bluetooth);
@@ -21,9 +21,16 @@
 
 
                     if (services.uartService) {
-                        services.uartService.addEventListener("receiveText", eventHandler);
-                        await services.uartService.send(new Uint8Array([104, 101, 108, 108, 111, 35])); // hello#
+					
+                        // services.uartService.addEventListener("receiveText", eventHandler);
+                        services.uartService.addEventListener("receiveText", (event) => {
+                            console.log("Received from micro:bit:", event.detail);
+                        });
+						
+                        // await services.uartService.send(new Uint8Array([104, 101, 108, 108, 111, 35])); // hello#
+                        await services.uartService.send("hello#");
                     }
+
 
                 }
             }
