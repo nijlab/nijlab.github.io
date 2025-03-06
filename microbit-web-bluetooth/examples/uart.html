@@ -44,7 +44,11 @@
                                     
                                     console.log("Connected to micro:bit UART Service!");
                                   
-                                    setupUartListener(services);
+                                    services.uartService.addEventListener("receiveText", (event) => {
+                                        batteryLevel = new TextDecoder().decode(event.target.value);
+                                        console.log("Received battery level:", batteryLevel);
+                                        updateBatteryUI(); // Call a function to process received text
+                                    });
                                 }                                
 
                                 
@@ -58,23 +62,19 @@
                         }
                 }
 
-                async function setupUartListener(services) {
-                    try {
+                // async function setupUartListener(services) {
+                //     try {
                         
-                        // Set up the event listener for receiving data
-                        services.uartService.addEventListener('receiveText', (event) => {
-                            batteryLevel = new TextDecoder().decode(event.target.value);
-                            console.log("Received battery level:", batteryLevel);
-                            updateBatteryUI(); // Call a function to process received text
-                        });
+                //         // Set up the event listener for receiving data
 
-                        // // Enable notifications to receive data updates
-                        // await uartCharacteristic.startNotifications();
-                        // console.log("UART notifications started.");
-                    } catch (error) {
-                        console.error("Error setting up UART listener:", error);
-                    }
-                }
+
+                //         // // Enable notifications to receive data updates
+                //         // await uartCharacteristic.startNotifications();
+                //         // console.log("UART notifications started.");
+                //     } catch (error) {
+                //         console.error("Error setting up UART listener:", error);
+                //     }
+                // }
 
                 function updateBatteryUI() {
                     let batteryImg = "battery-empty.png";
