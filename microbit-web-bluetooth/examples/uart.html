@@ -78,13 +78,13 @@
                 // }
 
                 function updateBatteryUI() {
-                    let batteryImg = "battery-empty.png";
-                    if (batteryLevel > 75) batteryImg = "battery_100.png";
-                    else if (batteryLevel > 50) batteryImg = "battery_75.png";
-                    else if (batteryLevel > 25) batteryImg = "battery_50.png";
-                    else if (batteryLevel > 0) batteryImg = "battery_25.png";
+                    let batteryImg = "batt_empty.png";
+                    if (batteryLevel > 75) batteryImg = "batt_100.png";
+                    else if (batteryLevel > 50) batteryImg = "batt_75.png";
+                    else if (batteryLevel > 25) batteryImg = "batt_50.png";
+                    else if (batteryLevel > 0) batteryImg = "batt_25.png";
 
-                    document.getElementById("battery").src = '../images/' + batteryImg;
+                    document.getElementById("battery").src = "../images/" + batteryImg;
                     document.getElementById("status").innerText = `Battery: ${batteryLevel}%`;
                 }
 
