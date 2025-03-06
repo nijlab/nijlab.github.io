@@ -34,13 +34,17 @@
             async function connectToMicrobit() {
     
                 try {
-                        device = await microbit.requestMicrobit(window.navigator.bluetooth, {
-                            filters: [{ name: "BBC micro:bit [tatap]" }], // 🔹 Connect to this specific device
-                            // optionalServices: ["6e400001-b5a3-f393-e0a9-e50e24dcca9e"] // 🔹 UART service UUID
-                        });
+                        // device = await microbit.requestMicrobit(window.navigator.bluetooth, {
+                        //     filters: [{ name: "BBC micro:bit [tatap]" }], // 🔹 Connect to this specific device
+                        //     // optionalServices: ["6e400001-b5a3-f393-e0a9-e50e24dcca9e"] // 🔹 UART service UUID
+                        // });
+
+                        device = await microbit.requestMicrobit(window.navigator.bluetooth);
 
                         // const server = await device.gatt.connect();
                         if (device) {
+
+                            await device.gatt.connect();
 
                             // connected update status
                             document.getElementById("lblStatusToggleBT").textContent = "Connected";
