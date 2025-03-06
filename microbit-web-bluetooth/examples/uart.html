@@ -28,34 +28,42 @@
                 async function connectToMicrobit() {
 		
                     try {
-                            const device = await navigator.bluetooth.requestDevice({
+                            const device = await microbit.requestMicrobit(window.navigator.bluetooth, {
                                 filters: [{ name: "BBC micro:bit [tatap]" }], // 🔹 Connect to this specific device
-                                optionalServices: ["6e400001-b5a3-f393-e0a9-e50e24dcca9e"] // 🔹 UART service UUID
+                                // optionalServices: ["6e400001-b5a3-f393-e0a9-e50e24dcca9e"] // 🔹 UART service UUID
                             });
 
-                            const server = await device.gatt.connect();
-                            console.log("Connected to:", device.name);
+                            // const server = await device.gatt.connect();
+                            if (device) {
+                                
+                                const services = await microbit.getServices(device);
+                                
+                                console.log("Connected to:", device.name);
 
-                            const service = await server.getPrimaryService("6e400001-b5a3-f393-e0a9-e50e24dcca9e"); // UART service
-                            // const uartCharacteristic = await service.getCharacteristic("6e400002-b5a3-f393-e0a9-e50e24dcca9e"); // TX Characteristic
+                                if (services.uartService) {
+                                    
+                                    console.log("Connected to micro:bit UART Service!");
+                                  
+                                    setupUartListener(services);
+                                }                                
 
-                            console.log("Connected to micro:bit UART Service!");
-                            
-                            // Store service reference and start listening
-                            setupUartListener(service);
+                                
+                                
+                                // Store service reference and start listening
+                                
+                            }
     
                         } catch (error) {
                             console.error("Connection failed:", error);
                         }
                 }
 
-                async function setupUartListener(service) {
+                async function setupUartListener(services) {
                     try {
-                        const uartCharacteristic = await service.getCharacteristic('6e400002-b5a3-f393-e0a9-e50e24dcca9e');
                         
                         // Set up the event listener for receiving data
-                        uartCharacteristic.addEventListener('characteristicvaluechanged', (event) => {
-                            const batteryLevel = new TextDecoder().decode(event.target.value);
+                        services.uartService.addEventListener('receiveText', (event) => {
+                            batteryLevel = new TextDecoder().decode(event.target.value);
                             console.log("Received battery level:", batteryLevel);
                             updateBatteryUI(); // Call a function to process received text
                         });
