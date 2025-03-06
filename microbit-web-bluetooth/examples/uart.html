@@ -46,9 +46,9 @@
                                   
                                     services.uartService.addEventListener("receiveText", (event) => {
                                         console.log("Received from micro:bit:", event.detail);
-                                        // batteryLevel = new TextDecoder().decode(event.detail);
-                                        // console.log("Received battery level:", batteryLevel);                                      
-                                        // updateBatteryUI(); // Call a function to process received text
+                                        batteryLevel = parseInt(receivedData.trim(), 10);
+                                        console.log("Received battery level:", batteryLevel);                                      
+                                        updateBatteryUI(); // Call a function to process received text
                                     });
                                 }                                
 
