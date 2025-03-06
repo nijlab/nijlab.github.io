@@ -45,8 +45,13 @@
                                     console.log("Connected to micro:bit UART Service!");
                                   
                                     services.uartService.addEventListener("receiveText", (event) => {
-                                        batteryLevel = new TextDecoder().decode(event.target.value);
+
+                                        console.log("Received from micro:bit:", event.detail);
+
+                                        batteryLevel = new TextDecoder().decode(event.detail);
+
                                         console.log("Received battery level:", batteryLevel);
+                                        
                                         updateBatteryUI(); // Call a function to process received text
                                     });
                                 }                                
