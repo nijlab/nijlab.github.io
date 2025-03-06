@@ -23,7 +23,7 @@
             <script>
                 let batteryLevel = 0;
                 let checkInterval = 5; // Check every 5 seconds (change as needed)
-                let services;
+                
 
                 async function connectToMicrobit() {
 		
@@ -42,14 +42,14 @@
                             console.log("Connected to micro:bit UART Service!");
                             
                             // Store service reference and start listening
-                            setupUartListener();
+                            setupUartListener(service);
     
                         } catch (error) {
                             console.error("Connection failed:", error);
                         }
                 }
 
-                async function setupUartListener() {
+                async function setupUartListener(service) {
                     try {
                         const uartCharacteristic = await service.getCharacteristic('6e400002-b5a3-f393-e0a9-e50e24dcca9e');
                         
