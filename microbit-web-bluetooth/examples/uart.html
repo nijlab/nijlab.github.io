@@ -1,40 +1,111 @@
 <html>
     <head>
-        <title>micro:bit</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Battery Status</title>
+        <style>
+            body { text-align: center; font-family: Arial, sans-serif; margin: 20px; }
+            #battery { width: 100px; }
+            #status { font-size: 20px; margin-top: 10px; }
+            button { padding: 10px 20px; font-size: 16px; cursor: pointer; }
+        </style>
         <script type="text/javascript" src="../dist/microbit.umd.js"></script>
     </head>
     <body>
-		<h1> change message to hello# </h1>
-        <button id="connect">Connect</button>
 
-        <div id="log" style="white-space: pre" />
-        <script>
-            const logEl = document.getElementById("log");
-            const log = (message) => logEl.innerHTML = `${message}\n${logEl.innerHTML}`;
-            // const logJson = (message) => log(JSON.stringify(message, null, 2));
-            // const eventHandler = event => log(`${event.type}: ${JSON.stringify(event.detail, null, 2)}`);
+		<h1> Battery Status </h1>
+        <img id="battery" src="../images/batt_empty.png" alt="Battery Level">
+        <p id="status">Battery: --%</p>
+        <button id="connectBtn">Connect to micro:bit</button>
 
-            document.getElementById("connect").onclick = async () => {
-                const device = await microbit.requestMicrobit(window.navigator.bluetooth);
-                if (device) {
-                    const services = await microbit.getServices(device);
+        <div id="log" style="white-space: pre">
 
+            <script>
+                let batteryLevel = 0;
+                let checkInterval = 5; // Check every 5 seconds (change as needed)
+                let services;
 
-                    if (services.uartService) {
-					
-                        // services.uartService.addEventListener("receiveText", eventHandler);
-                        services.uartService.addEventListener("receiveText", (event) => {
-                            console.log("Received from micro:bit:", event.detail);
-                        });
-						
-                        // await services.uartService.send(new Uint8Array([104, 101, 108, 108, 111, 35])); // hello#
-                        await services.uartService.send("hello#");
-                    }
+                async function connectToMicrobit() {
+		
+                    try {
+                            const device = await navigator.bluetooth.requestDevice({
+                                filters: [{ name: "BBC micro:bit [tatap]" }], // 🔹 Connect to this specific device
+                                optionalServices: ["6e400001-b5a3-f393-e0a9-e50e24dcca9e"] // 🔹 UART service UUID
+                            });
 
+                            const server = await device.gatt.connect();
+                            console.log("Connected to:", device.name);
 
+                            const service = await server.getPrimaryService("6e400001-b5a3-f393-e0a9-e50e24dcca9e"); // UART service
+                            // const uartCharacteristic = await service.getCharacteristic("6e400002-b5a3-f393-e0a9-e50e24dcca9e"); // TX Characteristic
+
+                            console.log("Connected to micro:bit UART Service!");
+                            
+                            // Store service reference and start listening
+                            setupUartListener();
+    
+                        } catch (error) {
+                            console.error("Connection failed:", error);
+                        }
                 }
-            }
 
-        </script>
+                async function setupUartListener() {
+                    try {
+                        const uartCharacteristic = await service.getCharacteristic('6e400002-b5a3-f393-e0a9-e50e24dcca9e');
+                        
+                        // Set up the event listener for receiving data
+                        uartCharacteristic.addEventListener('characteristicvaluechanged', (event) => {
+                            const batteryLevel = new TextDecoder().decode(event.target.value);
+                            console.log("Received battery level:", batteryLevel);
+                            updateBatteryUI(); // Call a function to process received text
+                        });
+
+                        // // Enable notifications to receive data updates
+                        // await uartCharacteristic.startNotifications();
+                        // console.log("UART notifications started.");
+                    } catch (error) {
+                        console.error("Error setting up UART listener:", error);
+                    }
+                }
+
+                function updateBatteryUI() {
+                    let batteryImg = "battery-empty.png";
+                    if (batteryLevel > 75) batteryImg = "battery_100.png";
+                    else if (batteryLevel > 50) batteryImg = "battery_75.png";
+                    else if (batteryLevel > 25) batteryImg = "battery_50.png";
+                    else if (batteryLevel > 0) batteryImg = "battery_25.png";
+
+                    document.getElementById("battery").src = '../images/' + batteryImg;
+                    document.getElementById("status").innerText = `Battery: ${batteryLevel}%`;
+                }
+
+                document.getElementById('connectBtn').addEventListener('click', function() {
+                    connectToMicrobit();
+                });
+
+                // document.getElementById("connect").onclick = async () => {
+                //     const device = await microbit.requestMicrobit(window.navigator.bluetooth);
+                //     if (device) {
+                //         const services = await microbit.getServices(device);
+
+
+                //         if (services.uartService) {
+                        
+                //             // services.uartService.addEventListener("receiveText", eventHandler);
+                //             services.uartService.addEventListener("receiveText", (event) => {
+                //                 console.log("Received from micro:bit:", event.detail);
+                //             });
+                            
+                //             // await services.uartService.send(new Uint8Array([104, 101, 108, 108, 111, 35])); // hello#
+                //             await services.uartService.send("hello#");
+                //         }
+
+
+                //     }
+                // }
+
+            </script>
+
+        </div>
     </body>
 </html>
